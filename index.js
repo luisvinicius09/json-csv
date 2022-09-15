@@ -115,3 +115,7 @@ const csvToJson = (input) => {
 
   return arrData;
 };
+
+// TODO: Nested JSON to CSV - Normalizing the data (https://www.geeksforgeeks.org/convert-nested-json-to-csv-in-python/)
+// TODO: Add support to file
+// TODO?: Add dataframes to decide how to organize you CSV to JSON conversion
