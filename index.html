@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<script src="https://cdn.tailwindcss.com"></script>
+
+		<title>JSON-CSV</title>
+	</head>
+	<body class="h-screen">
+		<div class="h-full p-6">
+			<h1 class="text-lg">JSON CSV Converter</h1>
+
+			<div class="grid grid-cols-2 gap-6 h-[97%]">
+				<fieldset class="flex flex-col">
+					<div class="flex justify-between">
+						<div>
+							<input type="file" id="json-file" name="json-file-input" accept=".json" />
+						</div>
+
+						<label class="text-center">JSON</label>
+
+						<div>
+							<button disabled>Save JSON File</button>
+						</div>
+					</div>
+
+					<textarea
+						class="w-full h-full resize-none"
+						id="json-input"
+						contenteditable="true"
+					></textarea>
+				</fieldset>
+
+				<fieldset class="flex flex-col">
+					<div class="flex justify-between">
+						<div>
+							<input type="file" id="csv-file" name="csv-file-input" accept=".csv" />
+						</div>
+
+						<label class="text-center">CSV</label>
+
+						<div>
+							<button disabled>Save CSV File</button>
+						</div>
+					</div>
+
+					<textarea
+						class="w-full h-full resize-none"
+						id="csv-input"
+						contenteditable="true"
+					></textarea>
+				</fieldset>
+			</div>
+		</div>
+
+		<script src="./index.js"></script>
+	</body>
+</html>

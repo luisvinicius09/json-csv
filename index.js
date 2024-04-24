@@ -1,121 +1,122 @@
-/**
- * CSV = comma separeted values
- * Each line of the file is a data record
- * https://en.wikipedia.org/wiki/Comma-separated_values
- *
- *
- * Year,Make,Model,Length
- * 1997,Ford,E350,2.35
- * 2000,Mercury,Cougar,2.38
- *
- */
+window.addEventListener('load', () => {
+	const jsonInput = document.querySelector('#json-input');
+	const csvInput = document.querySelector('#csv-input');
 
-/**
- * JSON = JavaScript Object Notation
- *
- * [
- *  {
- *    "id":1,
- *    "userName": "Sam Smith",
- *    "phone": 379983344394
- *  },
- *  {
- *    "id":2,
- *    "userName": "Fred Frankly",
- *    "phone": 37991234394
- *  },
- *  {
- *    "id":1,
- *    "userName": "Zachary Zupers",
- *    "phone": 37998334123
- *  }
- * ]
- */
+	let timeout;
 
-// fs.writeFile("data.csv", data, "utf-8", (err) => {
-//   if (err) console.log(err);
-//   else console.log("Data saved");
-// });
+	jsonInput.addEventListener('input', (event) => {
+		if (timeout) {
+			clearTimeout(timeout);
+		}
 
-const csv = `Year,Make,Model,Length
-1997,Ford,E350,2.35
-2000,Mercury,Cougar,2.38`;
+		timeout = setTimeout(() => {
+			const input = event.target.value;
 
-// const json = {
-//   id: 1,
-//   userName: 'Zachary Zupers',
-//   phone: 37998334123,
-// };
+			try {
+				const parsedInput = JSON.parse(input); // everything gotta be double quoted, no trailing commas
 
-// const json = [
-//   {
-//     id: 1,
-//     // createdAt: "2022-03-01",
-//     userName: 'Zachary Zupers',
-//     phone: 37998334123,
-//   },
-//   {
-//     id: 2,
-//     userName: 'Mel Medarta',
-//     phone: 37998334123,
-//   },
-// ];
+				jsonInput.value = JSON.stringify(parsedInput, undefined, 4); // auto formats json input
 
-const jsonToCsv = (input) => {
-  let data = '';
+				let data = '';
 
-  if (!Array.isArray(input)) {
-    data += Object.keys(input).toString().slice(0, input.length) + '\n';
+				if (Array.isArray(parsedInput)) {
+					// data += Object.keys(parsedInput[0]).toString().slice(0, parsedInput[0].length) + '\n';
+					data += Object.keys(parsedInput[0]).toString() + '\n';
 
-    data += Object.values(input).toString().slice(0, input.length) + '\n';
+					parsedInput.map((item) => {
+						// data += Object.values(item).toString().slice(0, item.length) + '\n';
+						data += Object.values(item).toString() + '\n';
+					});
 
-    return data;
-  }
+					csvInput.value = data;
+					return;
+				}
 
-  data += Object.keys(input[0]).toString().slice(0, input[0].length) + '\n';
+				// data += Object.keys(parsedInput).toString().slice(0, parsedInput.length) + '\n';
+				data += Object.keys(parsedInput).toString() + '\n';
 
-  input.map((item) => {
-    data += Object.values(item).toString().slice(0, item.length) + '\n';
-  });
+				// data += Object.values(parsedInput).toString().slice(0, parsedInput.length) + '\n';
+				data += Object.values(parsedInput).toString() + '\n';
 
-  return data;
-};
+				csvInput.value = data;
+				return;
+			} catch (err) {
+				console.log(err);
 
-const csvToJson = (input) => {
-  let arrData = [];
-  let objData = {};
+				// todo: display error on screen
+			}
+		}, 2500);
+	});
 
-  const csvSplitted = input.split(/\n/);
+	csvInput.addEventListener('input', (event) => {
+		if (timeout) {
+			clearTimeout(timeout);
+		}
 
-  const keys = input.split(/\n/)[0].split(',');
-  const values = input.split(/\n/).slice(1, input.length);
+		timeout = setTimeout(() => {
+			const input = event.target.value;
 
-  if (csvSplitted.length === 2) {
-    let tempObj = {};
+			// TODO: validate csv input
 
-    keys.map((key, index) => {
-      tempObj = { ...tempObj, [key]: values[0].split(',')[index] };
-    });
+			let arrData = [];
+			let objData = {};
 
-    objData = { ...objData, ...tempObj };
+			const csvSplitted = input.split(/\n/);
 
-    return objData;
-  }
+			const keys = input.split(/\n/)[0].split(',');
+			const values = input.split(/\n/).slice(1, input.length);
 
-  values.map((value) => {
-    let tempObj = {};
+			if (csvSplitted.length === 2) {
+				let tempObj = {};
 
-    const newValues = value.split(',');
+				keys.map((key, index) => {
+					tempObj = { ...tempObj, [key]: values[0].split(',')[index] };
+				});
 
-    keys.map((key, index) => {
-      tempObj = { ...tempObj, [key]: newValues[index] };
-    });
-    arrData.push(tempObj);
-  });
+				objData = { ...objData, ...tempObj };
 
-  return arrData;
-};
+				jsonInput.value = JSON.stringify(objData, undefined, 4);
+				return;
+			}
 
-// TODO: Nested JSON to CSV - Normalizing the data (https://www.geeksforgeeks.org/convert-nested-json-to-csv-in-python/)
-// TODO: Add support to file
-// TODO?: Add dataframes to decide how to organize you CSV to JSON conversion
+			values.map((value) => {
+				let tempObj = {};
+
+				const newValues = value.split(',');
+
+				keys.map((key, index) => {
+					tempObj = { ...tempObj, [key]: newValues[index] };
+				});
+				arrData.push(tempObj);
+			});
+
+			jsonInput.value = JSON.stringify(arrData, undefined, 4);
+			return;
+		}, 2500);
+	});
+
+	/** ---------- */
+	const jsonFileInput = document.querySelector('#json-file-input');
+	const csvFileInput = document.querySelector('#csv-file-input');
+
+	jsonFileInput.addEventListener('change', (event) => {
+		if (event.target.files.length > 1) {
+			alert('Multiple files not supported...');
+		}
+
+		const file = event.target.files[0];
+		// const reader = new FileReader();
+
+		// reader.onload((file) => {
+			
+		// });
+	});
+
+	csvFileInput.addEventListener('change', (event) => {
+		if (event.target.files.length > 1) {
+			alert('Multiple files not supported...');
+		}
+
+		const file = event.target.files[0];
+	});
+});
